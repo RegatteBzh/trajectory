@@ -2,9 +2,9 @@ package polar
 
 import (
 	"encoding/csv"
+	"io"
 	"log"
 	"math"
-	"os"
 	"sort"
 	"strconv"
 )
@@ -16,17 +16,10 @@ func (a byAngle) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
 func (a byAngle) Less(i, j int) bool { return a[i].Angle < a[j].Angle }
 
 // ReadCsvPolar reads polar information about a boat
-func ReadCsvPolar(csvFilename string) (sailChar SailCharacteristic, err error) {
+func ReadCsvPolar(csvFile io.Reader) (sailChar SailCharacteristic, err error) {
 	sailChar = SailCharacteristic{}
 	sailChar.Polars = make([]Polar, 0)
 	sailChar.Winds = make([]float64, 0)
-
-	csvFile, err := os.Open(csvFilename)
-	if err != nil {
-		log.Fatal(err)
-		return
-	}
-	defer csvFile.Close()
 
 	reader := csv.NewReader(csvFile)
 	reader.Comma = ';'
