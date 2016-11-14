@@ -10,6 +10,8 @@ import (
 // ReadBlock reads a block of binary
 func ReadBlock(file io.Reader, first bool) (count uint32, winds []float32, err error) {
 	size := make([]byte, 4)
+
+	// read data block
 	if _, err = file.Read(size); err != nil {
 		log.Fatal("file.Read failed (ReadBlock)\n", err)
 		return
@@ -20,18 +22,21 @@ func ReadBlock(file io.Reader, first bool) (count uint32, winds []float32, err e
 		return
 	}
 
-	// Don't know why, at the second block, the first 4 bytes (after count) must go to trash
-	if !first {
-		file.Read(size)
-	}
-
+	// read data
 	windb := make([]byte, count)
 	if _, err = file.Read(windb); err != nil {
 		log.Fatal("file.Read failed (ReadBlock)\n", err)
 		return
 	}
 
+	// read the size again
+	if _, err = file.Read(size); err != nil {
+		log.Fatal("file.Read failed (ReadBlock)\n", err)
+		return
+	}
+
 	count = count / 4
+
 	winds = make([]float32, count)
 	windsBuf := bytes.NewReader(windb)
 	if err = binary.Read(windsBuf, binary.LittleEndian, &winds); err != nil {
