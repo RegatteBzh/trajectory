@@ -16,8 +16,8 @@ func (a byAngle) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
 func (a byAngle) Less(i, j int) bool { return a[i].Angle < a[j].Angle }
 
 // ReadCsvPolar reads polar information about a boat
-func ReadCsvPolar(csvFile io.Reader) (sailChar SailCharacteristic, err error) {
-	sailChar = SailCharacteristic{}
+func ReadCsvPolar(csvFile io.Reader) (*SailCharacteristic, error) {
+	sailChar = &SailCharacteristic{}
 	sailChar.Polars = make([]Polar, 0)
 	sailChar.Winds = make([]float64, 0)
 
@@ -27,13 +27,16 @@ func ReadCsvPolar(csvFile io.Reader) (sailChar SailCharacteristic, err error) {
 
 	csvData, err := reader.ReadAll()
 	if err != nil {
-		log.Fatal(err)
-		return
+		return nil, err
 	}
 
 	sailChar.Winds = make([]float64, len(csvData[0]))
 	for index, wind := range csvData[0][1:] {
-		sailChar.Winds[index], _ = strconv.ParseFloat(wind, 32)
+		sailChar.Winds[index], err = strconv.ParseFloat(wind, 32)
+		if err != nil {
+			log.Println("Error parsing wind data %s", wind)
+			continue
+		}
 		// knot to m/s conversion
 		sailChar.Winds[index] = sailChar.Winds[index] * float64(0.514444)
 	}
@@ -42,24 +45,30 @@ func ReadCsvPolar(csvFile io.Reader) (sailChar SailCharacteristic, err error) {
 
 	sailChar.Polars = make([]Polar, len(csvData)-1)
 	for index, polarSample := range csvData {
-		if index > 0 {
-			newPolar := Polar{}
-			newPolar.Angle, _ = strconv.ParseFloat(polarSample[0], 32)
-			newPolar.Speed = make([]float64, len(polarSample)-1)
-			for i, Speed := range polarSample {
-				if i > 0 {
-					newPolar.Speed[i-1], _ = strconv.ParseFloat(Speed, 32)
-					// knot to m/s conversion
-					newPolar.Speed[i-1] = newPolar.Speed[i-1] * float64(0.514444)
+		//skip the firt record
+		if index == 0 {
+			continue
+		}	
+		newPolar := Polar{}
+		newPolar.Angle, _ = strconv.ParseFloat(polarSample[0], 32)
+		newPolar.Speed = make([]float64, len(polarSample)-1)
+		for i, Speed := range polarSample {
+			if i > 0 {
+				newPolar.Speed[i-1], err = strconv.ParseFloat(Speed, 32)
+				if err != nil {
+					log.Println("Error parsing wind speed %s", wind)
+					continue
 				}
+				// knot to m/s conversion
+				newPolar.Speed[i-1] = newPolar.Speed[i-1] * float64(0.514444)
 			}
-			sailChar.Polars[index-1] = newPolar
 		}
+		sailChar.Polars[index-1] = newPolar
 	}
 
 	sort.Sort(byAngle(sailChar.Polars))
 
-	return
+	return sailChar, nil
 }
 
 func getCursorValue(first float64, second float64, cursor float64) float64 {
@@ -74,7 +83,7 @@ func getCursorValue(first float64, second float64, cursor float64) float64 {
 // @param windSpeed Speed of the wind in m/s
 // @return boat speed in m/s
 //
-func (sailChar SailCharacteristic) GetSpeed(windAngle float64, windSpeed float64) (speed float64) {
+func (sailChar *SailCharacteristic) GetSpeed(windAngle float64, windSpeed float64) (speed float64) {
 	speed = 0
 	firstPolar := Polar{}
 	secondPolar := Polar{}
