@@ -12,7 +12,7 @@ import (
 func main() {
 	csvFile, err := os.Open("./data/polar/vpp_1_1.csv")
 	if err != nil {
-		log.Fatal(err) //log.Fatal run an os.Exit 
+		log.Fatal(err) //log.Fatal run an os.Exit
 	}
 	defer csvFile.Close()
 
@@ -24,16 +24,16 @@ func main() {
 
 	sail, err := polar.ReadCsvPolar(csvFile)
 	if err != nil { //do not skip err checking
-		log.Fatal(err) //log.Fatal run an os.Exit 
+		log.Fatal(err) //log.Fatal run an os.Exit
 	}
 	winds, err := wind.ReadWind(binFile)
 	if err != nil {
-		log.Fatal(err) //log.Fatal run an os.Exit 
+		log.Fatal(err) //log.Fatal run an os.Exit
 	}
 
 	fmt.Printf("%+v\n", winds[0])
 
-	speed := sail.GetSpeed(6, 25)
+	speed := sail.GetSpeed(60, 25)
 	fmt.Printf("%f\n", speed)
 
 }

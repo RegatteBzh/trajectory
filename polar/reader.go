@@ -17,7 +17,7 @@ func (a byAngle) Less(i, j int) bool { return a[i].Angle < a[j].Angle }
 
 // ReadCsvPolar reads polar information about a boat
 func ReadCsvPolar(csvFile io.Reader) (*SailCharacteristic, error) {
-	sailChar = &SailCharacteristic{}
+	sailChar := &SailCharacteristic{}
 	sailChar.Polars = make([]Polar, 0)
 	sailChar.Winds = make([]float64, 0)
 
@@ -48,7 +48,7 @@ func ReadCsvPolar(csvFile io.Reader) (*SailCharacteristic, error) {
 		//skip the firt record
 		if index == 0 {
 			continue
-		}	
+		}
 		newPolar := Polar{}
 		newPolar.Angle, _ = strconv.ParseFloat(polarSample[0], 32)
 		newPolar.Speed = make([]float64, len(polarSample)-1)
@@ -56,7 +56,7 @@ func ReadCsvPolar(csvFile io.Reader) (*SailCharacteristic, error) {
 			if i > 0 {
 				newPolar.Speed[i-1], err = strconv.ParseFloat(Speed, 32)
 				if err != nil {
-					log.Println("Error parsing wind speed %s", wind)
+					log.Printf("Error parsing wind speed %s", Speed)
 					continue
 				}
 				// knot to m/s conversion
