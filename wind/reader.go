@@ -8,7 +8,7 @@ import (
 )
 
 // ReadBlock reads a block of binary
-func ReadBlock(file io.Reader, first bool) (count uint32, winds []float32, err error) {
+func ReadBlock(file io.Reader) (count uint32, winds []float32, err error) {
 	size := make([]byte, 4)
 
 	// read data block
@@ -49,8 +49,8 @@ func ReadBlock(file io.Reader, first bool) (count uint32, winds []float32, err e
 
 // ReadWind reads wind from binary file
 func ReadWind(file io.Reader) (winds []Wind, err error) {
-	countU, windsU, err := ReadBlock(file, true)
-	countV, windsV, err := ReadBlock(file, false)
+	countU, windsU, err := ReadBlock(file)
+	countV, windsV, err := ReadBlock(file)
 
 	count := countU
 	if count > countV {
