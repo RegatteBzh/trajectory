@@ -3,6 +3,7 @@ package wind
 import (
 	"bytes"
 	"encoding/binary"
+	"image"
 	"io"
 	"log"
 )
@@ -48,7 +49,7 @@ func ReadBlock(file io.Reader) (count uint32, winds []float32, err error) {
 }
 
 // ReadWind reads wind from binary file
-func ReadWind(file io.Reader) (winds []Wind, err error) {
+func ReadWind(file io.Reader) (Map, error) {
 	countU, windsU, err := ReadBlock(file)
 	countV, windsV, err := ReadBlock(file)
 
@@ -57,21 +58,50 @@ func ReadWind(file io.Reader) (winds []Wind, err error) {
 		count = countV
 	}
 
-	winds = make([]Wind, count)
+	windMap := Map{
+		Height: 181,
+		Width:  360,
+		CellH:  60,
+		CellW:  60,
+		Data:   make([]Speed, 181*360),
+	}
 
-	phi := float64(0)
-	lambda := float64(-90)
+	phi := -90
+	lambda := 0
 	for i := uint32(0); i < count; i++ {
-		winds[i] = Wind{
-			lambda,
-			phi,
-			float64(windsU[i]),
-			float64(windsV[i]),
+		if lambda >= 180 {
+			// lambda[180 - 359] => x=[0-179]
+			windMap.SetWind(
+				image.Point{
+					lambda - 180,
+					phi + 90,
+				},
+				Speed{
+					speedU: windsU[i],
+					speedV: windsV[i],
+				},
+			)
+		} else {
+			// lambda[0 - 179] => x=[180-359]
+			windMap.SetWind(
+				image.Point{
+					lambda + 180,
+					phi + 90,
+				},
+				Speed{
+					speedU: windsU[i],
+					speedV: windsV[i],
+				},
+			)
 		}
-		if lambda > 359 {
+
+		lambda = lambda + 1
+
+		if lambda >= 360 {
 			phi++
 			lambda = 0
 		}
 	}
-	return
+
+	return windMap, err
 }

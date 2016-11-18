@@ -34,7 +34,7 @@ func ReadCsvPolar(csvFile io.Reader) (*SailCharacteristic, error) {
 	for index, wind := range csvData[0][1:] {
 		sailChar.Winds[index], err = strconv.ParseFloat(wind, 32)
 		if err != nil {
-			log.Println("Error parsing wind data %s", wind)
+			log.Printf("Error parsing wind data %s\n", wind)
 			continue
 		}
 		// knot to m/s conversion
@@ -52,11 +52,11 @@ func ReadCsvPolar(csvFile io.Reader) (*SailCharacteristic, error) {
 		newPolar := Polar{}
 		newPolar.Angle, _ = strconv.ParseFloat(polarSample[0], 32)
 		newPolar.Speed = make([]float64, len(polarSample)-1)
-		for i, Speed := range polarSample {
+		for i, speed := range polarSample {
 			if i > 0 {
-				newPolar.Speed[i-1], err = strconv.ParseFloat(Speed, 32)
+				newPolar.Speed[i-1], err = strconv.ParseFloat(speed, 32)
 				if err != nil {
-					log.Printf("Error parsing wind speed %s", Speed)
+					log.Printf("Error parsing wind speed %s\n", speed)
 					continue
 				}
 				// knot to m/s conversion

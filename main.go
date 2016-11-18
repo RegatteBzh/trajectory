@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"image"
 	"log"
 	"os"
 
@@ -31,7 +32,7 @@ func main() {
 		log.Fatal(err) //log.Fatal run an os.Exit
 	}
 
-	fmt.Printf("%+v\n", winds[0])
+	fmt.Printf("%+v\n", winds.GetWind(image.Point{00, 0}))
 
 	speed := sail.GetSpeed(60, 25)
 	fmt.Printf("%f\n", speed)
