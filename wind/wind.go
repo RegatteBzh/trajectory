@@ -3,7 +3,7 @@ package wind
 import (
 	"image"
 
-	"github.com/regattebzh/trajectory/wind"
+	"github.com/regattebzh/trajectory/mapper"
 )
 
 // Speed is the speed of the wind (m/sec)
@@ -13,19 +13,19 @@ type Speed struct {
 }
 
 // SetWind set a wind speed
-func (buffer Map) SetWind(loc image.Point, speed wind.Speed) {
+func SetWind(buffer mapper.Map, loc image.Point, speed Speed) {
 	buffer.Data[loc.Y*buffer.Width+loc.X] = speed
 }
 
 // GetWind get a wind speed
-func (buffer Map) GetWind(loc image.Point) wind.Speed {
+func GetWind(buffer mapper.Map, loc image.Point) Speed {
 	return buffer.Data[loc.Y*buffer.Width+loc.X]
 }
 
 // Compare compares values
-func Compare(a Element, b Element) int {
+func (a Speed) Compare(b Speed) int {
 	aLength := a.SpeedU*a.SpeedU + a.SpeedV*a.SpeedV
 	bLength := b.SpeedU*b.SpeedU + b.SpeedV*b.SpeedV
 
-	return (aLength - bLength)
+	return int(aLength - bLength)
 }

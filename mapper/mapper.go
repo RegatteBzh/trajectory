@@ -26,8 +26,8 @@ func (buffer Map) Get(loc image.Point) Element {
 // GetMax gets the maximum value
 func (buffer Map) GetMax() Element {
 	var max Element
-	for _, w := range e {
-		if Compare(w, max) > 0 {
+	for _, w := range buffer.Data {
+		if w.Compare(max) > 0 {
 			max = w
 		}
 	}
@@ -37,8 +37,8 @@ func (buffer Map) GetMax() Element {
 //GetMin gets the minimum value
 func (buffer Map) GetMin() Element {
 	var min Element
-	for _, w := range e {
-		if Compare(w, min) < 0 {
+	for _, w := range buffer.Data {
+		if w.Compare(min) < 0 {
 			min = w
 		}
 	}

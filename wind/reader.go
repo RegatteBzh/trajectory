@@ -73,7 +73,8 @@ func ReadWind(file io.Reader) (mapper.Map, error) {
 	for i := uint32(0); i < count; i++ {
 		if lambda >= 180 {
 			// lambda[180 - 359] => x=[0-179]
-			windMap.Set(
+			SetWind(
+				windMap,
 				image.Point{
 					lambda - 180,
 					phi + 90,
@@ -85,7 +86,8 @@ func ReadWind(file io.Reader) (mapper.Map, error) {
 			)
 		} else {
 			// lambda[0 - 179] => x=[180-359]
-			windMap.Set(
+			SetWind(
+				windMap,
 				image.Point{
 					lambda + 180,
 					phi + 90,
