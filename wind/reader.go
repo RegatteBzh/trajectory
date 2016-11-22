@@ -65,7 +65,7 @@ func ReadWind(file io.Reader) (mapper.Map, error) {
 		Width:  360,
 		CellH:  60,
 		CellW:  60,
-		Data:   make([]Speed, 181*360),
+		Data:   make([]mapper.Element, 181*360),
 	}
 
 	phi := -90
@@ -80,8 +80,8 @@ func ReadWind(file io.Reader) (mapper.Map, error) {
 					phi + 90,
 				},
 				Speed{
-					speedU: windsU[i],
-					speedV: windsV[i],
+					SpeedU: windsU[i],
+					SpeedV: windsV[i],
 				},
 			)
 		} else {
@@ -93,8 +93,8 @@ func ReadWind(file io.Reader) (mapper.Map, error) {
 					phi + 90,
 				},
 				Speed{
-					speedU: windsU[i],
-					speedV: windsV[i],
+					SpeedU: windsU[i],
+					SpeedV: windsV[i],
 				},
 			)
 		}

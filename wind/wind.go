@@ -18,14 +18,18 @@ func SetWind(buffer mapper.Map, loc image.Point, speed Speed) {
 }
 
 // GetWind get a wind speed
-func GetWind(buffer mapper.Map, loc image.Point) Speed {
+func GetWind(buffer mapper.Map, loc image.Point) mapper.Element {
 	return buffer.Data[loc.Y*buffer.Width+loc.X]
 }
 
 // Compare compares values
-func (a Speed) Compare(b Speed) int {
+func (a Speed) Compare(b mapper.Element) int {
 	aLength := a.SpeedU*a.SpeedU + a.SpeedV*a.SpeedV
-	bLength := b.SpeedU*b.SpeedU + b.SpeedV*b.SpeedV
+	bSpeed, ok := b.(Speed)
+	if !ok {
+		return 0
+	}
+	bLength := bSpeed.SpeedU*bSpeed.SpeedU + bSpeed.SpeedV*bSpeed.SpeedV
 
 	return int(aLength - bLength)
 }
