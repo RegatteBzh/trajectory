@@ -6,6 +6,8 @@ import (
 	"image"
 	"io"
 	"log"
+
+	"github.com/regattebzh/trajectory/mapper"
 )
 
 // ReadBlock reads a block of binary
@@ -49,7 +51,7 @@ func ReadBlock(file io.Reader) (count uint32, winds []float32, err error) {
 }
 
 // ReadWind reads wind from binary file
-func ReadWind(file io.Reader) (Map, error) {
+func ReadWind(file io.Reader) (mapper.Map, error) {
 	countU, windsU, err := ReadBlock(file)
 	countV, windsV, err := ReadBlock(file)
 
@@ -58,12 +60,12 @@ func ReadWind(file io.Reader) (Map, error) {
 		count = countV
 	}
 
-	windMap := Map{
+	windMap := mapper.Map{
 		Height: 181,
 		Width:  360,
 		CellH:  60,
 		CellW:  60,
-		Data:   make([]Speed, 181*360),
+		Data:   make([]mapper.Element, 181*360),
 	}
 
 	phi := -90
@@ -71,26 +73,28 @@ func ReadWind(file io.Reader) (Map, error) {
 	for i := uint32(0); i < count; i++ {
 		if lambda >= 180 {
 			// lambda[180 - 359] => x=[0-179]
-			windMap.SetWind(
+			SetWind(
+				windMap,
 				image.Point{
 					lambda - 180,
 					phi + 90,
 				},
 				Speed{
-					speedU: windsU[i],
-					speedV: windsV[i],
+					SpeedU: windsU[i],
+					SpeedV: windsV[i],
 				},
 			)
 		} else {
 			// lambda[0 - 179] => x=[180-359]
-			windMap.SetWind(
+			SetWind(
+				windMap,
 				image.Point{
 					lambda + 180,
 					phi + 90,
 				},
 				Speed{
-					speedU: windsU[i],
-					speedV: windsV[i],
+					SpeedU: windsU[i],
+					SpeedV: windsV[i],
 				},
 			)
 		}
