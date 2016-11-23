@@ -18,3 +18,5 @@ create a folder named ``data/weather`` containing:
 * ``gfs.t00z.pgrb2.1p00.f003.bin``
 * ``gfs.t00z.pgrb2.1p00.f006.bin``
 * ...
+
+create a folder named ``etopo`` containing ``etopo1_ice_g_i2.bin``

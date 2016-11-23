@@ -10,8 +10,7 @@ import (
 	"github.com/regattebzh/trajectory/mapper"
 )
 
-// ReadBlock reads a block of binary
-func ReadBlock(file io.Reader) (count uint32, winds []float32, err error) {
+func readBlock(file io.Reader) (count uint32, winds []float32, err error) {
 	size := make([]byte, 4)
 
 	// read data block
@@ -50,10 +49,10 @@ func ReadBlock(file io.Reader) (count uint32, winds []float32, err error) {
 	return
 }
 
-// ReadWind reads wind from binary file
-func ReadWind(file io.Reader) (mapper.Map, error) {
-	countU, windsU, err := ReadBlock(file)
-	countV, windsV, err := ReadBlock(file)
+// Read reads wind from binary file
+func Read(file io.Reader) (mapper.Map, error) {
+	countU, windsU, err := readBlock(file)
+	countV, windsV, err := readBlock(file)
 
 	count := countU
 	if count > countV {

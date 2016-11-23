@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 
+	"github.com/regattebzh/trajectory/etopo"
 	"github.com/regattebzh/trajectory/polar"
 	"github.com/regattebzh/trajectory/wind"
 )
@@ -23,18 +24,33 @@ func main() {
 	}
 	defer binFile.Close()
 
+	etopoFile, err := os.Open("./data/etopo/etopo1_ice_g_i2.bin")
+	if err != nil {
+		log.Fatal(err) //log.Fatal run an os.Exit
+	}
+	defer etopoFile.Close()
+
 	sail, err := polar.ReadCsvPolar(csvFile)
 	if err != nil { //do not skip err checking
 		log.Fatal(err) //log.Fatal run an os.Exit
 	}
-	winds, err := wind.ReadWind(binFile)
+	winds, err := wind.Read(binFile)
 	if err != nil {
 		log.Fatal(err) //log.Fatal run an os.Exit
 	}
 
-	fmt.Printf("%+v\n", wind.GetWind(winds, image.Point{00, 0}))
+	etopoData, err := etopo.Read(etopoFile)
+	if err != nil {
+		log.Fatal(err) //log.Fatal run an os.Exit
+	}
+
+	myWind, _ := wind.GetWind(winds, image.Point{00, 0})
+	fmt.Printf("Wind: %+v\n", myWind)
 
 	speed := sail.GetSpeed(60, 25)
-	fmt.Printf("%f\n", speed)
+	fmt.Printf("Polar: %f\n", speed)
+
+	topo, _ := etopo.GetAltitude(etopoData, image.Point{00, 0})
+	fmt.Printf("Altitude: %d\n", topo)
 
 }
