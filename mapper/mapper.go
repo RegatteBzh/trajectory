@@ -1,6 +1,10 @@
 package mapper
 
-import "image"
+import (
+	"image"
+
+	"github.com/regattebzh/trajectory/mapper"
+)
 
 // Map is a map
 type Map struct {
@@ -51,4 +55,15 @@ func (buffer Map) GetMin() Element {
 func (buffer Map) ComputeParameters() {
 	buffer.Max = buffer.GetMax()
 	buffer.Min = buffer.GetMin()
+}
+
+// New create a new Mapper
+func New(r image.Rectangle, cellW int, cellH int) {
+	return mapper.Map{
+		Width:  r.Dx(),
+		Height: r.Dy(),
+		Data:   make([]mapper.Element, r.Dx()*r.Dy()),
+		CellH:  cellH,
+		CellW:  cellW,
+	}
 }
