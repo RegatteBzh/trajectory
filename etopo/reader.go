@@ -41,15 +41,22 @@ func Read(file io.Reader) (mapper.Map, error) {
 
 //ReadRectangle reads a rectangle
 func ReadRectangle(file os.File, r image.Rectangle) (mapper.Map, error) {
+	if r.Min.Y < -90*60 {
+		r.Min.Y = -90
+	}
+
+	if r.Max.Y > 90*60 {
+		r.Min.Y = 90
+	}
 
 	buffer := mapper.New(r, 1, 1)
 	var err error
 
 	fileLine := make([]byte, r.Dx()*dataSize)
 	bufferLine := 0
-	for line := int64(r.Min.Y); line < int64(r.Max.Y); line++ {
+	for line := int64(r.Min.Y + 90); line < int64(r.Max.Y+90); line++ {
 		// read line in file
-		offset := (line*int64(width) + int64(r.Min.X)) * dataSize
+		offset := (line*int64(width) + int64(r.Min.X+180)) * dataSize
 		file.Seek(offset, 0)
 		if _, err = file.Read(fileLine); err != nil {
 			log.Fatal("etopo: file.Read failed (ReadRectangle)\n", err)

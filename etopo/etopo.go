@@ -11,12 +11,12 @@ type Altitude int16
 
 // SetAltitude set a wind speed
 func SetAltitude(buffer mapper.Map, loc image.Point, altitude Altitude) {
-	buffer.Data[loc.Y*buffer.Width+loc.X] = altitude
+	buffer.Data[loc.Y*buffer.Rect.Dx()+loc.X] = altitude
 }
 
 // GetAltitude get a wind speed
 func GetAltitude(buffer mapper.Map, loc image.Point) (Altitude, bool) {
-	alt, ok := buffer.Data[loc.Y*buffer.Width+loc.X].(Altitude)
+	alt, ok := buffer.Data[loc.Y*buffer.Rect.Dx()+loc.X].(Altitude)
 	return alt, ok
 }
 

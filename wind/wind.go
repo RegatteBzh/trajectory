@@ -14,12 +14,12 @@ type Speed struct {
 
 // SetWind set a wind speed
 func SetWind(buffer mapper.Map, loc image.Point, speed Speed) {
-	buffer.Data[loc.Y*buffer.Width+loc.X] = speed
+	buffer.Data[loc.Y*buffer.Rect.Dx()+loc.X] = speed
 }
 
 // GetWind get a wind speed
 func GetWind(buffer mapper.Map, loc image.Point) (Speed, bool) {
-	speed, ok := buffer.Data[loc.Y*buffer.Width+loc.X].(Speed)
+	speed, ok := buffer.Data[loc.Y*buffer.Rect.Dx()+loc.X].(Speed)
 	return speed, ok
 }
 

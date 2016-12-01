@@ -2,29 +2,26 @@ package mapper
 
 import (
 	"image"
-
-	"github.com/regattebzh/trajectory/mapper"
 )
 
 // Map is a map
 type Map struct {
-	Width  int // Map width
-	Height int // Map Height
-	CellW  int // Cell Width in minutes
-	CellH  int // Cell Height in minutes
-	Data   []Element
-	Max    Element
-	Min    Element
+	Rect  image.Rectangle
+	CellW int // Cell Width in minutes
+	CellH int // Cell Height in minutes
+	Data  []Element
+	Max   Element
+	Min   Element
 }
 
 // Set sets a map value
 func (buffer Map) Set(loc image.Point, element Element) {
-	buffer.Data[loc.Y*buffer.Width+loc.X] = element
+	buffer.Data[loc.Y*buffer.Rect.Dx()+loc.X] = element
 }
 
 // Get gets a map value
 func (buffer Map) Get(loc image.Point) Element {
-	return buffer.Data[loc.Y*buffer.Width+loc.X]
+	return buffer.Data[loc.Y*buffer.Rect.Dx()+loc.X]
 }
 
 // GetMax gets the maximum value
@@ -58,12 +55,11 @@ func (buffer Map) ComputeParameters() {
 }
 
 // New create a new Mapper
-func New(r image.Rectangle, cellW int, cellH int) {
-	return mapper.Map{
-		Width:  r.Dx(),
-		Height: r.Dy(),
-		Data:   make([]mapper.Element, r.Dx()*r.Dy()),
-		CellH:  cellH,
-		CellW:  cellW,
+func New(r image.Rectangle, cellW int, cellH int) Map {
+	return Map{
+		Rect:  r,
+		Data:  make([]Element, r.Dx()*r.Dy()),
+		CellH: cellH,
+		CellW: cellW,
 	}
 }
