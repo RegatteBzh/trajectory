@@ -1,6 +1,7 @@
 package mapper
 
 import (
+	"errors"
 	"image"
 
 	"github.com/regattebzh/trajectory/earth"
@@ -24,6 +25,35 @@ func NewRectangle(x0, y0, x1, y1 int) image.Rectangle {
 		earth.Modulo(x1, 360),
 		earth.Modulo(y1, 180),
 	)
+}
+
+// Left put a map at the left of the other
+func (buffer Map) Left(right Map) (result Map, err error) {
+	if buffer.Rect.Dy() != right.Rect.Dy() {
+		err = errors.New("Both rectangle do not have the same height")
+		return
+	}
+
+	data := [][]Element{}
+	for _, column := range buffer.Data {
+		data = append(data, column)
+	}
+	for _, column := range right.Data {
+		data = append(data, column)
+	}
+
+	result = Map{
+		Rect: image.Rect(
+			buffer.Rect.Min.X,
+			buffer.Rect.Min.Y,
+			buffer.Rect.Max.X+right.Rect.Dx(),
+			buffer.Rect.Max.Y,
+		),
+		Data:  data,
+		CellH: buffer.CellH,
+		CellW: buffer.CellW,
+	}
+	return
 }
 
 // Set sets a map value
