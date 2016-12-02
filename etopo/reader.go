@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/binary"
 	"image"
-	"io"
 	"log"
 	"os"
 
@@ -16,7 +15,7 @@ const height = 10801
 const dataSize = 2 // sizeof int16
 
 //Read read ETOPO binary
-func Read(file io.Reader) (mapper.Map, error) {
+/*func Read(file io.Reader) (mapper.Map, error) {
 
 	buffer := mapper.New(image.Rect(0, 0, width, height), 1, 1)
 	preData := make([]byte, width*height*dataSize)
@@ -37,7 +36,7 @@ func Read(file io.Reader) (mapper.Map, error) {
 	buffer.ComputeParameters()
 
 	return buffer, nil
-}
+}*/
 
 //ReadRectangle reads a rectangle
 func ReadRectangle(file os.File, r image.Rectangle) (mapper.Map, error) {
@@ -69,7 +68,7 @@ func ReadRectangle(file os.File, r image.Rectangle) (mapper.Map, error) {
 		}
 		// store data
 		for index, value := range data {
-			buffer.Data[index+r.Dx()*bufferLine] = Altitude(value)
+			buffer.Set(image.Point{index, bufferLine}, Altitude(value))
 		}
 		bufferLine++
 	}
