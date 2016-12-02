@@ -14,39 +14,10 @@ const width = 21601
 const height = 10801
 const dataSize = 2 // sizeof int16
 
-//Read read ETOPO binary
-/*func Read(file io.Reader) (mapper.Map, error) {
-
-	buffer := mapper.New(image.Rect(0, 0, width, height), 1, 1)
-	preData := make([]byte, width*height*dataSize)
-	if _, err := file.Read(preData); err != nil {
-		log.Fatal("file.Read failed (ReadEtopo)\n", err)
-	}
-
-	data := make([]int16, width*height)
-	dataBuf := bytes.NewReader(preData)
-	if err := binary.Read(dataBuf, binary.LittleEndian, data); err != nil {
-		log.Fatal("Byte to int16 failed\n", err)
-	}
-
-	for index, value := range data {
-		buffer.Data[index] = Altitude(value)
-	}
-
-	buffer.ComputeParameters()
-
-	return buffer, nil
-}*/
-
 //ReadRectangle reads a rectangle
 func ReadRectangle(file os.File, r image.Rectangle) (mapper.Map, error) {
-	if r.Min.Y < -90*60 {
-		r.Min.Y = -90
-	}
 
-	if r.Max.Y > 90*60 {
-		r.Min.Y = 90
-	}
+	r = r.Add(image.Point{180, 90})
 
 	buffer := mapper.New(r, 1, 1)
 	var err error

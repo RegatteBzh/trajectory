@@ -2,6 +2,8 @@ package mapper
 
 import (
 	"image"
+
+	"github.com/regattebzh/trajectory/earth"
 )
 
 // Map is a map
@@ -12,6 +14,16 @@ type Map struct {
 	Data  [][]Element
 	Max   Element
 	Min   Element
+}
+
+// NewRectangle create a rectangle on the trigonometric earth
+func NewRectangle(x0, y0, x1, y1 int) image.Rectangle {
+	return image.Rect(
+		earth.Modulo(x0, 360),
+		earth.Modulo(y0, 180),
+		earth.Modulo(x1, 360),
+		earth.Modulo(y1, 180),
+	)
 }
 
 // Set sets a map value
