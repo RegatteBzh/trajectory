@@ -3,39 +3,46 @@ package etopo
 import (
 	"bytes"
 	"encoding/binary"
-	"io"
+	"image"
 	"log"
+	"os"
 
 	"github.com/regattebzh/trajectory/mapper"
 )
 
-//Read read ETOPO binary
-func Read(file io.Reader) (mapper.Map, error) {
-	width := 21601
-	height := 10801
-	buffer := mapper.Map{
-		Width:  width,
-		Height: height,
-		Data:   make([]mapper.Element, width*height),
-		CellH:  1,
-		CellW:  1,
-	}
-	preData := make([]byte, width*height*2)
-	if _, err := file.Read(preData); err != nil {
-		log.Fatal("file.Read failed (ReadEtopo)\n", err)
+const width = 21601
+const height = 10801
+const dataSize = 2 // sizeof int16
+
+//ReadRectangle reads a rectangle
+func ReadRectangle(file os.File, r image.Rectangle) (mapper.Map, error) {
+
+	r = r.Add(image.Point{180, 90})
+
+	buffer := mapper.New(r, 1, 1)
+	var err error
+
+	fileLine := make([]byte, r.Dx()*dataSize)
+	bufferLine := 0
+	for line := int64(r.Min.Y + 90); line < int64(r.Max.Y+90); line++ {
+		// read line in file
+		offset := (line*int64(width) + int64(r.Min.X+180)) * dataSize
+		file.Seek(offset, 0)
+		if _, err = file.Read(fileLine); err != nil {
+			log.Fatal("etopo: file.Read failed (ReadRectangle)\n", err)
+		}
+		// convert in an array of int16
+		data := make([]int16, r.Dx())
+		dataBuf := bytes.NewReader(fileLine)
+		if err := binary.Read(dataBuf, binary.LittleEndian, data); err != nil {
+			log.Fatal("Byte to int16 failed\n", err)
+		}
+		// store data
+		for index, value := range data {
+			buffer.Set(image.Point{index, bufferLine}, Altitude(value))
+		}
+		bufferLine++
 	}
 
-	data := make([]int16, width*height)
-	dataBuf := bytes.NewReader(preData)
-	if err := binary.Read(dataBuf, binary.LittleEndian, data); err != nil {
-		log.Fatal("Byte to int16 failed\n", err)
-	}
-
-	for index, value := range data {
-		buffer.Data[index] = Altitude(value)
-	}
-
-	buffer.ComputeParameters()
-
-	return buffer, nil
+	return buffer, err
 }

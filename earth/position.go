@@ -8,15 +8,15 @@ type Position struct {
 
 // MoveObject move an object on the earth
 func MoveObject(position Position, speed VectorL, deltaTime float64) (newPosition Position) {
-	lambda := position.Loc.Lambda
+	lon := position.Loc.Lon
 	length := VectorL{
-		speed.U * deltaTime,
-		speed.V * deltaTime,
+		U: speed.U * deltaTime,
+		V: speed.V * deltaTime,
 	}
-	angle := Length2Angle(length, lambda)
+	angle := Length2Angle(length, lon)
 	newLoc := VectorA{
-		position.Loc.Lambda + angle.Lambda,
-		position.Loc.Phi + angle.Phi,
+		Lon: position.Loc.Lon + angle.Lon,
+		Lat: position.Loc.Lat + angle.Lat,
 	}
 	newPosition = Position{
 		newLoc,

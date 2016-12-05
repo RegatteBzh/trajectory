@@ -59,13 +59,7 @@ func Read(file io.Reader) (mapper.Map, error) {
 		count = countV
 	}
 
-	windMap := mapper.Map{
-		Height: 181,
-		Width:  360,
-		CellH:  60,
-		CellW:  60,
-		Data:   make([]mapper.Element, 181*360),
-	}
+	windMap := mapper.New(image.Rect(0, 0, 360, 181), 60, 60)
 
 	phi := -90
 	lambda := 0
