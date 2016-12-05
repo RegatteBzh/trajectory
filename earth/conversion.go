@@ -11,8 +11,11 @@ import (
 	"math"
 )
 
-const ra = 6378137
-const rb = 6356752
+// RA is the ray at equator
+const RA = 6378137
+
+// RB is the ray at the pole
+const RB = 6356752
 
 // VectorL is a 2D vector that representes lengths
 type VectorL struct {
@@ -30,23 +33,25 @@ func degreeToRadian(angle float64) float64 {
 	return angle * math.Pi / 180
 }
 
-func localRayLatitude(Lon float64) float64 {
+// LocalRayLatitude compute local ray on latitude
+func LocalRayLatitude(Lon float64) float64 {
 	angle := degreeToRadian(Lon)
 	cos := math.Cos(angle)
 	sin := math.Sin(angle)
-	return math.Sqrt(ra*ra*cos*cos + rb*rb*sin*sin)
+	return math.Sqrt(RA*RA*cos*cos + RB*RB*sin*sin)
 }
 
-func localRayLongitude(Lon float64) float64 {
+// LocalRayLongitude compute local ray on longitude
+func LocalRayLongitude(Lon float64) float64 {
 	angle := degreeToRadian(Lon)
-	return localRayLatitude(Lon) * math.Cos(angle)
+	return LocalRayLatitude(Lon) * math.Cos(angle)
 }
 
 // Angle2length convert angle (degree) in length (meter)
 func Angle2length(angle VectorA, Lon float64) (length VectorL) {
 	length = VectorL{
-		U: math.Pi * angle.Lon * localRayLongitude(Lon) / 180,
-		V: math.Pi * angle.Lat * localRayLatitude(Lon) / 180,
+		U: math.Pi * angle.Lon * LocalRayLongitude(Lon) / 180,
+		V: math.Pi * angle.Lat * LocalRayLatitude(Lon) / 180,
 	}
 	return
 }
@@ -54,8 +59,8 @@ func Angle2length(angle VectorA, Lon float64) (length VectorL) {
 // Length2Angle convert length (meter) in angle (degree)
 func Length2Angle(length VectorL, Lon float64) (angle VectorA) {
 	angle = VectorA{
-		Lon: 180 * length.U / (math.Pi * localRayLongitude(Lon)),
-		Lat: 180 * length.V / (math.Pi * localRayLatitude(Lon)),
+		Lon: 180 * length.U / (math.Pi * LocalRayLongitude(Lon)),
+		Lat: 180 * length.V / (math.Pi * LocalRayLatitude(Lon)),
 	}
 	return
 }
